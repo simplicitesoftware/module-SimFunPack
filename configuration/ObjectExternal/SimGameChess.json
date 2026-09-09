@@ -4,7 +4,7 @@
  "obe_nature": "com_simplicite_webapp_services_RESTServiceExternalObject",
  "obe_url": null,
  "obe_settings": null,
- "obe_comment": null,
+ "obe_comment": "REST wrapper for bestMove service",
  "obe_help": null,
  "obe_class": null,
  "obe_script_id": {
