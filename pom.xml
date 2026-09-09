@@ -94,5 +94,12 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
       <artifactId>simplicite-api</artifactId>
       <version>${simplicite.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.simplicite</groupId>
+      <artifactId>simplicite-webapp-sse</artifactId>
+      <version>${simplicite.version}</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/simplicite-webapp-sse.jar</systemPath>
+    </dependency>
   </dependencies>
 </project>

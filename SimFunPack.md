@@ -14,12 +14,11 @@
 System parameters
 -----------------
 
-| Code | Value | Type | Description |
-|---|---|---|---|
-| `SIM_EASTER_EGGS` | `{  "invaders": "devmode",  "gambit": "devmode",  "2048": "devmode" }` | LFL | Use `true` or `"devmode"` to activate the easter egg. |
+| Code              | Value                                                                  | Type | Description                                           |
+|-------------------|------------------------------------------------------------------------|------|-------------------------------------------------------|
+| `SIM_EASTER_EGGS` | `{  "invaders": "devmode",  "gambit": "devmode",  "2048": "devmode" }` | LFL  | Use `true` or `"devmode"` to activate the easter egg. |
 
 Shared code
 -----------
 
 * `SimChess` _(Server script)_
-
