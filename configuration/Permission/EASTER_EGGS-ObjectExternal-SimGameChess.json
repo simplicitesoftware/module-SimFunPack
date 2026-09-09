@@ -1,0 +1,16 @@
+{
+ "prm_group_id__grp_name": "EASTER_EGGS",
+ "prm_object": {
+  "object": "ObjectExternal",
+  "label": "External object",
+  "userkeylabel": "SimGameChess",
+  "icon": "img/system/external_object",
+  "item": {"obe_name": "SimGameChess"}
+ },
+ "prm_perm": true,
+ "prm_upd": false,
+ "prm_req": false,
+ "prm_prop": null,
+ "prm_value": null,
+ "row_module_id__mdl_name": "SimFunPack"
+}

@@ -1,0 +1,9 @@
+{
+ "grp_name": "EASTER_EGGS",
+ "grp_comment": null,
+ "grp_type": ["G"],
+ "grp_parent_id__grp_name": null,
+ "row_module_id__mdl_name": "SimFunPack",
+ "grp_scope_id__sco_name": null,
+ "grp_scope_id__sco_home_id__viw_name": null
+}

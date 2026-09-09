@@ -1,6 +1,6 @@
 var GameChess = (function($) {
 
-const app = $ui.getAjax();
+const app = window.$app;
 let ctn, board, data, player, game, ews, pieces;
 
 // called from SIM_CHESS_GAME
@@ -533,12 +533,14 @@ class ChessBot {
 		if (this.#remoteDown)
 			return this.#fallback(null, cbk);
 
+		// Public external object endpoint (/ext/...), not the UI one (/ui/ext/...)
 		const u = app.getExternalObjectURL("SimGameChess", {
 			format: "san",
 			depth: this.#depth,
 			fen: game.fen()
-		}, true);
-		$.ajax({
+		}, true).replace("/ui/ext/", "/ext/");
+
+        $.ajax({
 			url: u,
 			dataType: "json"
 		})
