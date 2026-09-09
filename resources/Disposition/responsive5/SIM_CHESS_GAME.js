@@ -522,21 +522,22 @@ function runBot() {
 
 // BOT: remote chess service, with a local negamax engine as fallback
 class ChessBot {
-    #depth = 7;
-    #count = 0;
-    #level = 2; // local engine strength: 0=beginner .. 5=expert
-    #useQuiesce = true;
-    #remoteDown = false;
+    _count = 0;
+    _level = 2; // difficulty: 0=beginner .. 5=expert (drives both the remote search depth and the local engine)
+    _useQuiesce = true;
+    _remoteDown = false;
 
 	run(cbk) {
 		// Try the remote service once; after any failure fall back to the local engine for good
-		if (this.#remoteDown)
-			return this.#fallback(null, cbk);
+		if (this._remoteDown)
+			return this._fallback(null, cbk);
 
-		// Public external object endpoint (/ext/...), not the UI one (/ui/ext/...)
+        // Best move from back-end service. Search depth follows the selected difficulty level.
+		// Public external object endpoint /ext is granted to EASTER_EGG group
+		const depth = ChessBot._LEVELS[ChessBot._clampLevel(this._level)].depth;
 		const u = app.getExternalObjectURL("SimGameChess", {
 			format: "san",
-			depth: this.#depth,
+			depth,
 			fen: game.fen()
 		}, true).replace("/ui/ext/", "/ext/");
 
@@ -547,21 +548,21 @@ class ChessBot {
 		.done(r => {
 			if (r && r.move) {
 				$(".stats",ctn).text("Depth: "+r.depth+" - Pos: "+r.pos+" - Time: "+(r.time/1000)+"s - Pos/sec:"+(Math.round(r.pos*1000/r.time)));
-				this.#done(r.move);
+				this._done(r.move);
 				cbk();
 			}
 			else
-				this.#fallback("External object SimGameChess error", cbk);
+				this._fallback("External object SimGameChess error", cbk);
 		})
-		.fail(() => this.#fallback("External object SimGameChess not available", cbk));
+		.fail(() => this._fallback("External object SimGameChess not available", cbk));
 	}
 
-    #fallback(msg, cbk) {
-        if (msg && !this.#remoteDown)
+    _fallback(msg, cbk) {
+        if (msg && !this._remoteDown)
             console.error(msg + " - switching to the local engine");
-        this.#remoteDown = true;
+        this._remoteDown = true;
         try {
-            this.#done(this.#getBestMove());
+            this._done(this._getBestMove());
         }
         catch (e) {
             console.error("Local chess engine error", e);
@@ -571,7 +572,7 @@ class ChessBot {
         }
     }
 
-    #done(bestMove) {
+    _done(bestMove) {
         if (!bestMove)
             return;
         if (!game.move(bestMove)) {
@@ -585,17 +586,17 @@ class ChessBot {
     }
 
     // Local heuristic engine (fallback when the chess service is unavailable).
-    // Strength is driven by `#level`: 0=beginner .. 5=expert.
-    static #INF = 99999;
-    static #MATE = 90000;
-    static #ABORT = {};   // thrown to unwind the search when the time budget is spent
-    #stopAt = 0;          // wall-clock deadline (ms) for the current search
+    // Strength is driven by `_level`: 0=beginner .. 5=expert.
+    static _INF = 99999;
+    static _MATE = 90000;
+    static _ABORT = {};   // thrown to unwind the search when the time budget is spent
+    _stopAt = 0;          // wall-clock deadline (ms) for the current search
 
     // Per level: nominal search depth, whether to run a quiescence search,
     // blunder = probability of playing a random legal move (human-like mistakes),
     // margin = how far (eval points, ~10 = a pawn) from the best score a move
     // may be and still be played, maxMs = soft time budget per move.
-    static #LEVELS = [
+    static _LEVELS = [
         { name:"Beginner",     depth:1, quiesce:false, blunder:1.00, margin:9999, maxMs:100  },
         { name:"Casual",       depth:2, quiesce:false, blunder:0.40, margin:25,   maxMs:400  },
         { name:"Intermediate", depth:2, quiesce:true,  blunder:0.12, margin:12,   maxMs:800  },
@@ -604,27 +605,27 @@ class ChessBot {
         { name:"Expert",       depth:5, quiesce:true,  blunder:0.00, margin:0,    maxMs:3500 }
     ];
 
-    static #clampLevel(n) {
+    static _clampLevel(n) {
         n = parseInt(n, 10);
-        return isNaN(n) ? 2 : Math.max(0, Math.min(ChessBot.#LEVELS.length - 1, n));
+        return isNaN(n) ? 2 : Math.max(0, Math.min(ChessBot._LEVELS.length - 1, n));
     }
-    setLevel(n) { this.#level = ChessBot.#clampLevel(n); }
-    getLevel() { return this.#level; }
+    setLevel(n) { this._level = ChessBot._clampLevel(n); }
+    getLevel() { return this._level; }
 
-    #getBestMove() {
+    _getBestMove() {
         if (!game || isGameOver(true))
             return;
-        this.#count = 0;
-        const cfg = ChessBot.#LEVELS[ChessBot.#clampLevel(this.#level)];
-        this.#useQuiesce = cfg.quiesce;
+        this._count = 0;
+        const cfg = ChessBot._LEVELS[ChessBot._clampLevel(this._level)];
+        this._useQuiesce = cfg.quiesce;
         const t0 = new Date().getTime();
         let scored, doneDepth = 0;
-        this.#stopAt = t0 + cfg.maxMs;
+        this._stopAt = t0 + cfg.maxMs;
         // Iterative deepening: on timeout we keep the last fully searched depth.
         for (let d = 1; d <= cfg.depth; d++) {
-            const res = this.#searchRoot(d);
+            const res = this._searchRoot(d);
             if (res) { scored = res; doneDepth = d; }
-            if (new Date().getTime() > this.#stopAt)
+            if (new Date().getTime() > this._stopAt)
                 break;
         }
         if (!scored || !scored.length) {
@@ -648,24 +649,24 @@ class ChessBot {
         pick = pick || scored[0]; // guard against NaN scores emptying the pool
 
         const t = (new Date().getTime() - t0) / 1000,
-            pps = t ? Math.round(this.#count / t) : this.#count;
-        $(".stats", ctn).text("Lvl " + this.#level + " (" + cfg.name + ") - Depth: " + doneDepth +
-            " - Pos: " + this.#count + " - Time: " + t + "s - Pos/sec:" + pps);
+            pps = t ? Math.round(this._count / t) : this._count;
+        $(".stats", ctn).text("Lvl " + this._level + " (" + cfg.name + ") - Depth: " + doneDepth +
+            " - Pos: " + this._count + " - Time: " + t + "s - Pos/sec:" + pps);
         return pick.move;
     }
 
-    static #PIECE_BASE = { p:10, n:30, b:30, r:50, q:90, k:900 };
+    static _PIECE_BASE = { p:10, n:30, b:30, r:50, q:90, k:900 };
 
     // Move ordering straight from the SAN string (cheap: no verbose move gen).
     // Checkmate first, then captures (cheapest attacker first), promotions,
     // checks, castling. Good ordering is what makes alpha/beta actually prune.
-    static #sanScore(s) {
+    static _sanScore(s) {
         if (s.indexOf("#") !== -1)
             return 100000;
         let v = 0;
         const c = s.charAt(0);
         if (s.indexOf("x") !== -1)
-            v += 10 - (c >= "A" && c <= "Z" ? (ChessBot.#PIECE_BASE[c.toLowerCase()] || 0) / 10 : 0.1);
+            v += 10 - (c >= "A" && c <= "Z" ? (ChessBot._PIECE_BASE[c.toLowerCase()] || 0) / 10 : 0.1);
         if (s.indexOf("=") !== -1)
             v += 9;
         if (s.indexOf("+") !== -1)
@@ -674,14 +675,14 @@ class ChessBot {
             v += 0.3;
         return v;
     }
-    static #orderMoves(moves) {
-        moves.sort(function(a, b) { return ChessBot.#sanScore(b) - ChessBot.#sanScore(a); });
+    static _orderMoves(moves) {
+        moves.sort(function(a, b) { return ChessBot._sanScore(b) - ChessBot._sanScore(a); });
         return moves;
     }
 
     // Static score relative to the side to move
-    static #evalRelative() {
-        const e = ChessBot.#evaluateBoard();
+    static _evalRelative() {
+        const e = ChessBot._evaluateBoard();
         return game.turn() == "w" ? e : -e;
     }
 
@@ -689,15 +690,15 @@ class ChessBot {
     // (captures / promotions, plus every reply while in check) so the engine
     // never scores a position in the middle of a trade or a check. `q` caps
     // the extra depth so it always terminates.
-    #qsearch(alpha, beta, q, ply) {
-        if ((++this.#count & 2047) === 0 && new Date().getTime() > this.#stopAt)
-            throw ChessBot.#ABORT;
+    _qsearch(alpha, beta, q, ply) {
+        if ((++this._count & 2047) === 0 && new Date().getTime() > this._stopAt)
+            throw ChessBot._ABORT;
         let moves = game.moves(), s;
         if (!moves.length)
-            return game.in_check() ? -(ChessBot.#MATE - ply) : 0;
+            return game.in_check() ? -(ChessBot._MATE - ply) : 0;
         const inCheck = game.in_check();
         if (!inCheck) {
-            s = ChessBot.#evalRelative(); // stand pat
+            s = ChessBot._evalRelative(); // stand pat
             if (s >= beta)
                 return beta;
             if (s > alpha)
@@ -707,11 +708,11 @@ class ChessBot {
             moves = moves.filter(function(m) { return m.indexOf("x") !== -1 || m.indexOf("=") !== -1; });
         }
         else if (q <= 0)
-            return ChessBot.#evalRelative();
-        ChessBot.#orderMoves(moves);
+            return ChessBot._evalRelative();
+        ChessBot._orderMoves(moves);
         for (let i=0; i<moves.length; i++) {
             game.move(moves[i]);
-            s = -this.#qsearch(-beta, -alpha, q - 1, ply + 1);
+            s = -this._qsearch(-beta, -alpha, q - 1, ply + 1);
             game.undo();
             if (s >= beta)
                 return beta;
@@ -722,18 +723,18 @@ class ChessBot {
     }
 
     // Negamax with alpha/beta pruning. `ply` lets shorter mates score higher.
-    #negamax(depth, alpha, beta, ply) {
-        if ((++this.#count & 2047) === 0 && new Date().getTime() > this.#stopAt)
-            throw ChessBot.#ABORT;
+    _negamax(depth, alpha, beta, ply) {
+        if ((++this._count & 2047) === 0 && new Date().getTime() > this._stopAt)
+            throw ChessBot._ABORT;
         const moves = game.moves(); // SAN strings: far cheaper than verbose
         if (!moves.length) // no legal move: checkmate or stalemate
-            return game.in_check() ? -(ChessBot.#MATE - ply) : 0;
+            return game.in_check() ? -(ChessBot._MATE - ply) : 0;
         if (depth <= 0)
-            return this.#useQuiesce ? this.#qsearch(alpha, beta, 6, ply) : ChessBot.#evalRelative();
-        ChessBot.#orderMoves(moves);
+            return this._useQuiesce ? this._qsearch(alpha, beta, 6, ply) : ChessBot._evalRelative();
+        ChessBot._orderMoves(moves);
         for (let i=0; i<moves.length; i++) {
             game.move(moves[i]);
-            const s = -this.#negamax(depth - 1, -beta, -alpha, ply + 1);
+            const s = -this._negamax(depth - 1, -beta, -alpha, ply + 1);
             game.undo();
             if (s >= beta)
                 return beta;
@@ -747,21 +748,21 @@ class ChessBot {
     // scored from the moving side's point of view (higher is better). Every
     // move gets a full window so the scores are exact -- the level logic needs
     // real gaps between moves to pick "near best" or blunder convincingly.
-    #searchRoot(depth) {
-        const moves = ChessBot.#orderMoves(game.moves()), out = [],
+    _searchRoot(depth) {
+        const moves = ChessBot._orderMoves(game.moves()), out = [],
             base = game.history().length;
         for (let i=0; i<moves.length; i++) {
-            if (i > 0 && new Date().getTime() > this.#stopAt)
+            if (i > 0 && new Date().getTime() > this._stopAt)
                 return null; // incomplete: caller keeps the previous depth
             let s;
             try {
                 game.move(moves[i]);
-                s = -this.#negamax(depth - 1, -ChessBot.#INF, ChessBot.#INF, 1);
+                s = -this._negamax(depth - 1, -ChessBot._INF, ChessBot._INF, 1);
                 game.undo();
             }
             catch (e) {
                 while (game.history().length > base) game.undo(); // restore the board first
-                if (e !== ChessBot.#ABORT) throw e;
+                if (e !== ChessBot._ABORT) throw e;
                 return null;
             }
             out.push({ move: moves[i], score: s });
@@ -773,7 +774,7 @@ class ChessBot {
     // Material + piece-square tables + pawn structure (doubled / isolated /
     // passed) + rook files + rook on 7th + minor-piece development + bishop
     // pair + king pawn-shield + tempo. Two cheap 8x8 passes, no move generation.
-    static #evaluateBoard() {
+    static _evaluateBoard() {
         const b = game.board(),
             wpawns = [0,0,0,0,0,0,0,0], bpawns = [0,0,0,0,0,0,0,0];
         let sc = 0, wbishop = 0, bbishop = 0, phase = 0,
@@ -803,7 +804,7 @@ class ChessBot {
                 const pc = b[i][j];
                 if (!pc) continue;
                 const w = pc.color == "w";
-                let v = ChessBot.#pieceSquareValue(pc.type, w, i, j, endgame);
+                let v = ChessBot._pieceSquareValue(pc.type, w, i, j, endgame);
                 if (pc.type == "p") {
                     const own = w ? wpawns : bpawns,
                         opp = w ? bpawns : wpawns;
@@ -836,7 +837,7 @@ class ChessBot {
 
         if (!endgame) {
             // Pawn shield: friendly pawns on the files around the king
-            sc += ChessBot.#shield(wpawns, wkFile) - ChessBot.#shield(bpawns, bkFile);
+            sc += ChessBot._shield(wpawns, wkFile) - ChessBot._shield(bpawns, bkFile);
             // Keep the king home (castling leaves it on its back rank; a king
             // that has walked off it in the middlegame is asking for trouble)
             if (wkRow != 7) sc -= 0.6;
@@ -848,7 +849,7 @@ class ChessBot {
         return sc;
     }
 
-    static #shield(pawns, file) {
+    static _shield(pawns, file) {
         let s = 0;
         for (let k = file-1; k <= file+1; k++)
             if (k >= 0 && k < 8)
@@ -856,11 +857,11 @@ class ChessBot {
         return s;
     }
 
-    static #rev(a) {
+    static _rev(a) {
         return a.slice().reverse();
     }
 
-    static #pawnEvalWhite = [
+    static _pawnEvalWhite = [
             [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, 0.0 ],
             [ 5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0, 5.0 ],
             [ 1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0, 1.0 ],
@@ -870,8 +871,8 @@ class ChessBot {
             [ 0.5,  1.0,  1.0, -2.0, -2.0,  1.0,  1.0, 0.5 ],
             [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, 0.0 ]
         ];
-    static #pawnEvalBlack = ChessBot.#rev(ChessBot.#pawnEvalWhite);
-    static #knightEval = [
+    static _pawnEvalBlack = ChessBot._rev(ChessBot._pawnEvalWhite);
+    static _knightEval = [
             [ -5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0 ],
             [ -4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0 ],
             [ -3.0,  0.0,  1.0,  1.5,  1.5,  1.0,  0.0, -3.0 ],
@@ -881,7 +882,7 @@ class ChessBot {
             [ -4.0, -2.0,  0.0,  0.5,  0.5,  0.0, -2.0, -4.0 ],
             [ -5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0 ]
         ];
-    static #bishopEvalWhite = [
+    static _bishopEvalWhite = [
             [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0 ],
             [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0 ],
             [ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0 ],
@@ -891,8 +892,8 @@ class ChessBot {
             [ -1.0,  0.5,  0.0,  0.0,  0.0,  0.0,  0.5, -1.0 ],
             [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0 ]
         ];
-    static #bishopEvalBlack = ChessBot.#rev(ChessBot.#bishopEvalWhite);
-    static #rookEvalWhite = [
+    static _bishopEvalBlack = ChessBot._rev(ChessBot._bishopEvalWhite);
+    static _rookEvalWhite = [
             [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,  0.0 ],
             [  0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,  0.5 ],
             [ -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5 ],
@@ -902,8 +903,8 @@ class ChessBot {
             [ -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5 ],
             [  0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0,  0.0 ]
         ];
-    static #rookEvalBlack = ChessBot.#rev(ChessBot.#rookEvalWhite);
-    static #queenEval = [
+    static _rookEvalBlack = ChessBot._rev(ChessBot._rookEvalWhite);
+    static _queenEval = [
             [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0 ],
             [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0 ],
             [ -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0 ],
@@ -913,7 +914,7 @@ class ChessBot {
             [ -1.0,  0.0,  0.5,  0.0,  0.0,  0.0,  0.0, -1.0 ],
             [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0 ]
         ];
-    static #kingEvalWhite = [
+    static _kingEvalWhite = [
             [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0 ],
             [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0 ],
             [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0 ],
@@ -923,9 +924,9 @@ class ChessBot {
             [  2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0 ],
             [  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
         ];
-    static #kingEvalBlack = ChessBot.#rev(ChessBot.#kingEvalWhite);
+    static _kingEvalBlack = ChessBot._rev(ChessBot._kingEvalWhite);
     // In the endgame the king should march to the centre instead of hiding.
-    static #kingEndEvalWhite = [
+    static _kingEndEvalWhite = [
             [ -5.0, -4.0, -3.0, -2.0, -2.0, -3.0, -4.0, -5.0 ],
             [ -3.0, -2.0, -1.0,  0.0,  0.0, -1.0, -2.0, -3.0 ],
             [ -3.0, -1.0,  2.0,  3.0,  3.0,  2.0, -1.0, -3.0 ],
@@ -935,25 +936,25 @@ class ChessBot {
             [ -3.0, -3.0,  0.0,  0.0,  0.0,  0.0, -3.0, -3.0 ],
             [ -5.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -5.0 ]
         ];
-    static #kingEndEvalBlack = ChessBot.#rev(ChessBot.#kingEndEvalWhite);
+    static _kingEndEvalBlack = ChessBot._rev(ChessBot._kingEndEvalWhite);
 
     // Board is game.board(): row 0 = rank 8, col 0 = file a, which matches the
     // orientation of the *White* tables above.
-    static #pieceSquareValue(t, w, row, col, endgame) {
+    static _pieceSquareValue(t, w, row, col, endgame) {
         if (t == "p")
-            return 10 + (w ? ChessBot.#pawnEvalWhite : ChessBot.#pawnEvalBlack)[row][col];
+            return 10 + (w ? ChessBot._pawnEvalWhite : ChessBot._pawnEvalBlack)[row][col];
         if (t == "n")
-            return 30 + ChessBot.#knightEval[row][col];
+            return 30 + ChessBot._knightEval[row][col];
         if (t == "b")
-            return 30 + (w ? ChessBot.#bishopEvalWhite : ChessBot.#bishopEvalBlack)[row][col];
+            return 30 + (w ? ChessBot._bishopEvalWhite : ChessBot._bishopEvalBlack)[row][col];
         if (t == "r")
-            return 50 + (w ? ChessBot.#rookEvalWhite : ChessBot.#rookEvalBlack)[row][col];
+            return 50 + (w ? ChessBot._rookEvalWhite : ChessBot._rookEvalBlack)[row][col];
         if (t == "q")
-            return 90 + ChessBot.#queenEval[row][col];
+            return 90 + ChessBot._queenEval[row][col];
         if (t == "k")
             return 900 + (endgame
-                ? (w ? ChessBot.#kingEndEvalWhite : ChessBot.#kingEndEvalBlack)[row][col]
-                : (w ? ChessBot.#kingEvalWhite : ChessBot.#kingEvalBlack)[row][col]);
+                ? (w ? ChessBot._kingEndEvalWhite : ChessBot._kingEndEvalBlack)[row][col]
+                : (w ? ChessBot._kingEvalWhite : ChessBot._kingEvalBlack)[row][col]);
         return 0;
     }
 }
