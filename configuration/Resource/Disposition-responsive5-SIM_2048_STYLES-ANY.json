@@ -13,12 +13,12 @@
  "res_file": {
   "path": "resources/Disposition/responsive5/SIM_2048_STYLES.less",
   "mime": "text/x-less",
-  "name": "sim_2048_styles.less"
+  "name": "SIM_2048_STYLES.less"
  },
  "res_file_compiled": {
   "path": "resources/Disposition/responsive5/SIM_2048_STYLES.min.css",
   "mime": "text/css",
-  "name": "sim_2048_styles.min.css"
+  "name": "SIM_2048_STYLES.min.css"
  },
  "res_image": null,
  "row_module_id__mdl_name": "SimFunPack"

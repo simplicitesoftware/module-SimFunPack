@@ -13,12 +13,12 @@
  "res_file": {
   "path": "resources/Disposition/responsive5/SIM_2048_GAME.js",
   "mime": "text/javascript",
-  "name": "sim_2048.js"
+  "name": "SIM_2048_GAME.js"
  },
  "res_file_compiled": {
   "path": "resources/Disposition/responsive5/SIM_2048_GAME.min.js",
   "mime": "text/javascript",
-  "name": "sim_2048.min.js"
+  "name": "SIM_2048_GAME.min.js"
  },
  "res_image": null,
  "row_module_id__mdl_name": "SimFunPack"

@@ -13,12 +13,12 @@
  "res_file": {
   "path": "resources/Disposition/responsive5/SIM_INVADERS.js",
   "mime": "text/javascript",
-  "name": "sim_invaders.js"
+  "name": "SIM_INVADERS.js"
  },
  "res_file_compiled": {
   "path": "resources/Disposition/responsive5/SIM_INVADERS.min.js",
   "mime": "text/javascript",
-  "name": "sim_invaders.min.js"
+  "name": "SIM_INVADERS.min.js"
  },
  "res_image": null,
  "row_module_id__mdl_name": "SimFunPack"
