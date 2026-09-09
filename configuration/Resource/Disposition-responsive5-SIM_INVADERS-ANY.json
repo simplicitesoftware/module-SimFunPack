@@ -1,0 +1,25 @@
+{
+ "res_object": {
+  "object": "Disposition",
+  "label": "Disposition",
+  "userkeylabel": "responsive5",
+  "icon": "img/system/disposition",
+  "item": {"dis_code": "responsive5"}
+ },
+ "res_type": "JS",
+ "res_lang": "ANY",
+ "res_code": "SIM_INVADERS",
+ "res_cached": false,
+ "res_file": {
+  "path": "resources/Disposition/responsive5/SIM_INVADERS.js",
+  "mime": "text/javascript",
+  "name": "sim_invaders.js"
+ },
+ "res_file_compiled": {
+  "path": "resources/Disposition/responsive5/SIM_INVADERS.min.js",
+  "mime": "text/javascript",
+  "name": "sim_invaders.min.js"
+ },
+ "res_image": null,
+ "row_module_id__mdl_name": "SimFunPack"
+}

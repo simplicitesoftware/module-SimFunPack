@@ -1,0 +1,14 @@
+{
+ "mdl_name": "SimFunPack",
+ "mdl_prefix": null,
+ "mdl_version": "7.0",
+ "mdl_type": "X",
+ "mdl_icon": null,
+ "mdl_url": null,
+ "mdl_comment": null,
+ "mdl_lib": {
+  "path": "build/module-simfunpack.jar",
+  "mime": "application/java-archive",
+  "name": "module-simfunpack.jar"
+ }
+}

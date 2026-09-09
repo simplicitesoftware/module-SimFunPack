@@ -1,0 +1,10 @@
+{
+ "scr_code": "SimChess",
+ "scr_file": {
+  "path": "src/com/simplicite/commons/SimFunPack/SimChess.java",
+  "mime": "text/plain",
+  "name": "SimChess.java"
+ },
+ "scr_type": "JSR",
+ "row_module_id__mdl_name": "SimFunPack"
+}

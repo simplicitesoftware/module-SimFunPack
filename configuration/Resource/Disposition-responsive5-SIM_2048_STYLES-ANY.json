@@ -1,0 +1,25 @@
+{
+ "res_object": {
+  "object": "Disposition",
+  "label": "Disposition",
+  "userkeylabel": "responsive5",
+  "icon": "img/system/disposition",
+  "item": {"dis_code": "responsive5"}
+ },
+ "res_type": "CSS",
+ "res_lang": "ANY",
+ "res_code": "SIM_2048_STYLES",
+ "res_cached": false,
+ "res_file": {
+  "path": "resources/Disposition/responsive5/SIM_2048_STYLES.less",
+  "mime": "text/x-less",
+  "name": "sim_2048_styles.less"
+ },
+ "res_file_compiled": {
+  "path": "resources/Disposition/responsive5/SIM_2048_STYLES.min.css",
+  "mime": "text/css",
+  "name": "sim_2048_styles.min.css"
+ },
+ "res_image": null,
+ "row_module_id__mdl_name": "SimFunPack"
+}

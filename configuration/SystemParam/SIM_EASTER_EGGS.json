@@ -1,0 +1,8 @@
+{
+ "sys_code": "SIM_EASTER_EGGS",
+ "sys_value": "{\n \"invaders\": \"devmode\",\n \"gambit\": \"devmode\",\n \"2048\": \"devmode\"\n}",
+ "sys_type": "LFL",
+ "sys_event": false,
+ "sys_desc": "Use `true` or `\"devmode\"` to activate the easter egg.",
+ "row_module_id__mdl_name": "SimFunPack"
+}

@@ -1,0 +1,10 @@
+{
+    "date": "2026-09-09 16:01:41",
+    "name": "SimFunPack",
+    "format": "json",
+    "files": ["configuration/**.json"],
+    "repository": {},
+    "version": "7.0",
+    "branch": "master",
+    "platform": "7.0.0-alpha"
+}

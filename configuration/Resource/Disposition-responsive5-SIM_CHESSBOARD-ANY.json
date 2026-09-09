@@ -1,0 +1,21 @@
+{
+ "res_object": {
+  "object": "Disposition",
+  "label": "Disposition",
+  "userkeylabel": "responsive5",
+  "icon": "img/system/disposition",
+  "item": {"dis_code": "responsive5"}
+ },
+ "res_type": "SET",
+ "res_lang": "ANY",
+ "res_code": "SIM_CHESSBOARD",
+ "res_cached": false,
+ "res_file": {
+  "path": "resources/Disposition/responsive5/SIM_CHESSBOARD.zip",
+  "mime": "application/zip",
+  "name": "chessboard.zip"
+ },
+ "res_file_compiled": null,
+ "res_image": null,
+ "row_module_id__mdl_name": "SimFunPack"
+}
