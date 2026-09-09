@@ -4,7 +4,7 @@
  "mdl_version": "7.0",
  "mdl_type": "X",
  "mdl_icon": null,
- "mdl_url": null,
+ "mdl_url": "{\n\t\"maven\": {\n\t\t\"eslint\": true,\n\t\t\"stylelint\": true,\n\t\t\"jshint\": true,\n\t\t\"checkstyle\": true,\n\t\t\"repositoryUrl\": \"public\"\n\t},\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module-SimFunPack.git\"\n\t},\n\t\"type\": \"git\",\n\t\"branch\": \"master\",\n\t\"export\": {\n\t\t\"format\": \"json\",\n\t\t\"exploded\": true\n\t}\n}",
  "mdl_comment": null,
  "mdl_lib": {
   "path": "build/module-simfunpack.jar",

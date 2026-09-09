@@ -74,13 +74,90 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
             <version>14.1.0</version>
           </dependency>
         </dependencies>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>checkstyle-validation</id>
+            <phase>validate</phase>
+            <goals>
+            <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>npm-install</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>--legacy-peer-deps</argument>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <?m2e ignore?>
+            <id>jshint-validation</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>run</argument>
+                <argument>jshint</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <?m2e ignore?>
+            <id>eslint-validation</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>run</argument>
+                <argument>eslint</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <?m2e ignore?>
+            <id>stylelint-validation</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>run</argument>
+                <argument>stylelint</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
   <repositories>
     <repository>
       <id>simplicite</id>
-      <url>${simplicite.url}/maven</url>
+      <url>https://platform.simplicite.io/7.0/maven</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
@@ -93,13 +170,6 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
       <groupId>com.simplicite</groupId>
       <artifactId>simplicite-api</artifactId>
       <version>${simplicite.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.simplicite</groupId>
-      <artifactId>simplicite-webapp-sse</artifactId>
-      <version>${simplicite.version}</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/simplicite-webapp-sse.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

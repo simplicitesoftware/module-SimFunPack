@@ -1,0 +1,21 @@
+{
+ "obe_name": "SimGameChess",
+ "obe_type": "E",
+ "obe_nature": "com_simplicite_webapp_services_RESTServiceExternalObject",
+ "obe_url": null,
+ "obe_settings": null,
+ "obe_comment": null,
+ "obe_help": null,
+ "obe_class": null,
+ "obe_script_id": {
+  "path": "src/com/simplicite/extobjects/SimFunPack/SimGameChess.java",
+  "mime": "text/plain",
+  "name": "SimGameChess.java"
+ },
+ "obe_icon": null,
+ "obe_permalink": null,
+ "obe_widget": false,
+ "row_module_id__mdl_name": "SimFunPack",
+ "obe_width": null,
+ "obe_height": null
+}

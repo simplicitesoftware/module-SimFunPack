@@ -1,0 +1,14 @@
+{
+ "tsl_object": {
+  "object": "ObjectExternal",
+  "label": "External object",
+  "userkeylabel": "SimGameChess",
+  "icon": "img/system/external_object",
+  "item": {"obe_name": "SimGameChess"}
+ },
+ "tsl_lang": "FRA",
+ "tsl_value": "ChessBot",
+ "tsl_plural_value": null,
+ "tsl_help": null,
+ "row_module_id__mdl_name": "SimFunPack"
+}
