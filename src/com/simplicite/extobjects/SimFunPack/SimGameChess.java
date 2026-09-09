@@ -8,13 +8,13 @@ import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
 /**
- * REST service external object SimGameChess
+ * REST wrapper for bestMove service
  */
 public class SimGameChess extends com.simplicite.webapp.services.RESTServiceExternalObject {
     private static final long serialVersionUID = 1L;
 
     /** Chess engine classes (from others/src), invoked by reflection to avoid a hard build/link dependency. */
-    private static final String ENGINE_CLASS = "org.simplicite.chess.servlet.BestMoveServlet";
+    private static final String ENGINE_CLASS = "org.simplicite.chess.search.FullSearch";
     private static final String BOOK_CLASS = "org.simplicite.chess.opening.OpeningBook";
 
     @Override

@@ -2,6 +2,7 @@ package org.simplicite.chess.search;
 
 import java.util.Date;
 
+import org.simplicite.chess.eval.CompleteEvaluator;
 import org.simplicite.chess.eval.Evaluator;
 import org.simplicite.chess.move.MoveGenerator;
 import org.simplicite.chess.opening.OpeningBook;
@@ -37,7 +38,37 @@ public class FullSearch
 		setEvaluator(eval);
 		setDepth(depth);
 	}
-	
+
+	/**
+	 * Computes the best move for a position and returns it as a JSON string
+	 * <code>{"move":..,"depth":..,"time":..,"pos":..}</code>, or <code>{}</code> when no FEN is given.
+	 * @param fen    position in FEN notation (may be null)
+	 * @param depth  search depth as a string (may be null, defaults to 5, non-numeric values are ignored)
+	 * @param format <code>san</code> for short algebraic notation (Qxe2), anything else for long notation (Qe1xe2)
+	 * @return JSON response string
+	 */
+	public static String bestMove(String fen, String depth, String format)
+	{
+		if (fen == null)
+			return "{}";
+
+		int d = 5;
+		if (depth != null)
+			try { d = Integer.parseInt(depth); } catch (Exception e) {}
+
+		Board b = new Board(fen);
+		FullSearch bot = new FullSearch(new CompleteEvaluator(), d);
+		BestMove bm = bot.getBestMove(b);
+
+		//System.out.println("bestmove "+bm.san + " pos="+bm.pos + " time="+(bm.time/1000)+"s");
+
+		return "{\"move\":\"" + ("san".equals(format)
+				? bm.san // Qxe2
+				: BBUtils.moveToString(bm.move)) // Qe1xe2
+			+ "\",\"depth\":" + d + ",\"time\":" + bm.time + ",\"pos\":" + bm.pos
+			+ "}";
+	}
+
 	public void setDepth(int depth)
 	{
 		if (depth<2) depth = 2;
