@@ -1,12 +1,11 @@
 package com.simplicite.commons.SimFunPack;
 
-import java.util.*;
 import org.json.JSONObject;
 
+import com.simplicite.util.AppLog;
 import com.simplicite.util.ObjectDB;
 import com.simplicite.util.Grant;
 import com.simplicite.util.Tool;
-import com.simplicite.webapp.sse.ServerSideEvent;
 
 /**
  * Shared code SimChess
@@ -30,6 +29,16 @@ public class SimChess implements java.io.Serializable {
             return;
 
         g.setUserSystemParam(opponent, code, value, false);
-        ServerSideEvent.pushObject(ServerSideEvent.EVENT_UPDATE, obj, null, obj.getRowId(), opponent);
+
+        // Live-notify the opponent over SSE. Called by reflection to avoid a compile
+        // dependency on com.simplicite.webapp.sse (not exported yet by simplicite-api).
+        try {
+            Class<?> sse = Class.forName("com.simplicite.webapp.sse.ServerSideEvent");
+            String eventUpdate = (String)sse.getField("EVENT_UPDATE").get(null);
+            sse.getMethod("pushObject", String.class, ObjectDB.class, String.class, String.class, String.class)
+                .invoke(null, eventUpdate, obj, null, obj.getRowId(), opponent);
+        } catch (ReflectiveOperationException e) {
+            AppLog.warning(SimChess.class, "notify", "SSE ServerSideEvent.pushObject unavailable", e, g);
+        }
     }
 }
