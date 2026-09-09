@@ -1,0 +1,10 @@
+{
+ "scr_code": "simfunpack-chess",
+ "scr_file": {
+  "path": "lib/simfunpack-chess.jar",
+  "mime": "application/java-archive",
+  "name": "simfunpack-chess.jar"
+ },
+ "scr_type": "LIB",
+ "row_module_id__mdl_name": "SimFunPack"
+}

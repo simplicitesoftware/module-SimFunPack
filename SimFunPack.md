@@ -22,4 +22,5 @@ Shared code
 -----------
 
 * `SimChess` _(Server script)_
+* `simfunpack-chess` _(Java library)_
 
