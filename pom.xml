@@ -59,40 +59,6 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.12.0</version>
       </plugin>
-      <!--
-        Extra source root: compile others/src (org.simplicite.chess.*) into the module jar
-        and package its non-Java resources (e.g. opening/book.txt).
-      -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <id>add-others-src</id>
-            <phase>generate-sources</phase>
-            <goals><goal>add-source</goal></goals>
-            <configuration>
-              <sources>
-                <source>${project.basedir}/others/src</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-others-resources</id>
-            <phase>generate-resources</phase>
-            <goals><goal>add-resource</goal></goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/others/src</directory>
-                  <excludes><exclude>**/*.java</exclude></excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -204,25 +170,6 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
       <groupId>com.simplicite</groupId>
       <artifactId>simplicite-api</artifactId>
       <version>${simplicite.version}</version>
-    </dependency>
-    <!-- Compile-only: others/src/.../servlet/BestMoveServlet.java uses javax.servlet.* -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <!--
-      com.simplicite.webapp.sse.* is provided by the platform at runtime (Tomcat WEB-INF/classes)
-      but is not exported in the simplicite-api artifact. Jar of those classes for compile only.
-      Rebuild with: jar cf others/lib/simplicite-webapp-sse.jar -C <TOMCAT>/webapps/ROOT/WEB-INF/classes com/simplicite/webapp/sse
-    -->
-    <dependency>
-      <groupId>com.simplicite</groupId>
-      <artifactId>simplicite-webapp-sse</artifactId>
-      <version>${simplicite.version}</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/others/lib/simplicite-webapp-sse.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
