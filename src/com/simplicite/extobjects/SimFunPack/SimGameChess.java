@@ -22,8 +22,7 @@ public class SimGameChess extends com.simplicite.webapp.services.RESTServiceExte
         // Eager opening-book warm-up; the engine also lazy-loads it on first use, so a failure here is not fatal.
         try {
             Class.forName(BOOK_CLASS).getMethod("init").invoke(null);
-        }
-        catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException e) {
             // chess engine not on the classpath - ignored here, get() reports it
         }
     }
@@ -51,11 +50,9 @@ public class SimGameChess extends com.simplicite.webapp.services.RESTServiceExte
                 .getMethod("bestMove", String.class, String.class, String.class)
                 .invoke(null, fen, params.getParameter("depth"), params.getParameter("format"));
             return new JSONObject((String) json);
-        }
-        catch (InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             return error(e.getCause() != null ? e.getCause() : e);
-        }
-        catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException e) {
             return internalServerError("Chess engine not available: " + e);
         }
     }

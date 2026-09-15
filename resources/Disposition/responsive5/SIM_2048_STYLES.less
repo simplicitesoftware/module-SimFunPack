@@ -1,13 +1,13 @@
 .game-2048 {
     width: 100%;
-    color: rgb(119, 110, 101);
+    color: #776e65;
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     outline: none;
 }
 .game-2048 .header {
     display: flex;
     justify-content: flex-end;
-    margin: 0px auto;
+    margin: 0 auto;
     width: 100%;
     text-align: center;
 }
@@ -23,7 +23,7 @@
     text-transform: uppercase;
 }
 .game-2048 .score {
-    background: rgb(187, 173, 160);
+    background: #bbada0;
     position: relative;
     padding: 22px 0 3px;
     color: #fff;
@@ -41,7 +41,7 @@
     font-size: 13px;
     line-height: 13px;
     text-align: center;
-    color: rgb(238, 228, 218);
+    color: #eee4da;
 }
 .game-2048 .score.best::before {
     content: "Best";
@@ -52,7 +52,7 @@
     height: 475px;
     margin: 10px auto;
     top: 0;
-    background-color: rgb(187, 173, 160);
+    background-color: #bbada0;
     border-radius: 10px;
 }
 .game-2048 .grid .cell {
@@ -60,7 +60,7 @@
     width: 100px;
     height: 100px;
     border-radius: 6px;
-    background-color: rgba(238, 228, 218, 0.35);
+    background-color: #eee4da59;
 }
 .game-2048 .grid .cell-num {
     position: absolute;
@@ -73,19 +73,64 @@
     border-radius: 6px;
     background: #000;
 }
-.game-2048 .grid .num-2 { background: #eee4da; font-size: 55px; }
-.game-2048 .grid .num-4 { background: #ede0c8; font-size: 55px; }
-.game-2048 .grid .num-8 { background: #f2b179; color: rgb(249, 246, 242); font-size: 55px; }
-.game-2048 .grid .num-16 { background: #f59563; color: rgb(249, 246, 242); font-size: 55px; }
-.game-2048 .grid .num-32 { background: #f67e5f; color: rgb(249, 246, 242); font-size: 55px; }
-.game-2048 .grid .num-64 { background: #f65e3b; color: rgb(249, 246, 242); font-size: 55px; }
-.game-2048 .grid .num-128 { background: #edcf72; color: rgb(249, 246, 242); font-size: 45px; }
-.game-2048 .grid .num-256 { background: #edcc61; color: rgb(249, 246, 242); font-size: 45px; }
-.game-2048 .grid .num-512 { background: #9c0; color: rgb(249, 246, 242); font-size: 45px; }
-.game-2048 .grid .num-1024 { background: #33b5e5; color: rgb(249, 246, 242); font-size: 35px; }
-.game-2048 .grid .num-2048 { background: #09c; color: rgb(249, 246, 242); font-size: 35px; }
-.game-2048 .grid .num-4096 { background: #a6c; color: rgb(249, 246, 242); font-size: 35px; }
-
+.game-2048 .grid .num-2 {
+    background: #eee4da;
+    font-size: 55px;
+}
+.game-2048 .grid .num-4 {
+    background: #ede0c8;
+    font-size: 55px;
+}
+.game-2048 .grid .num-8 {
+    background: #f2b179;
+    color: #f9f6f2;
+    font-size: 55px;
+}
+.game-2048 .grid .num-16 {
+    background: #f59563;
+    color: #f9f6f2;
+    font-size: 55px;
+}
+.game-2048 .grid .num-32 {
+    background: #f67e5f;
+    color: #f9f6f2;
+    font-size: 55px;
+}
+.game-2048 .grid .num-64 {
+    background: #f65e3b;
+    color: #f9f6f2;
+    font-size: 55px;
+}
+.game-2048 .grid .num-128 {
+    background: #edcf72;
+    color: #f9f6f2;
+    font-size: 45px;
+}
+.game-2048 .grid .num-256 {
+    background: #edcc61;
+    color: #f9f6f2;
+    font-size: 45px;
+}
+.game-2048 .grid .num-512 {
+    background: #9c0;
+    color: #f9f6f2;
+    font-size: 45px;
+}
+.game-2048 .grid .num-1024 {
+    background: #33b5e5;
+    color: #f9f6f2;
+    font-size: 35px;
+}
+.game-2048 .grid .num-2048 {
+    background: #09c;
+    color: #f9f6f2;
+    font-size: 35px;
+}
+.game-2048 .grid .num-4096 {
+    background: #a6c;
+    color: #f9f6f2;
+    font-size: 35px;
+}
 .game-2048 .popup {
     position: absolute;
     top: 0;
@@ -93,7 +138,7 @@
     bottom: 0;
     left: 0;
     text-align: center;
-    background: rgba(238, 228, 218, 0.5);
+    background: #eee4da80;
     animation: 800ms ease 1200ms 1 normal both running fade-in;
     display: flex;
     flex-direction: column;
@@ -105,11 +150,11 @@
     line-height: 60px;
 }
 .game-2048 .retry-button {
-    color: rgb(249, 246, 242);
+    color: #f9f6f2;
     height: 40px;
     line-height: 42px;
     margin-left: 9px;
-    background: rgb(143, 122, 102);
+    background: #8f7a66;
     border-radius: 5px;
-    padding: 0px 20px;
+    padding: 0 20px;
 }
