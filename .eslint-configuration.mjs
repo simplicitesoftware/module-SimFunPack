@@ -24,6 +24,7 @@ export default [
         '$tools': true,
         '$console': true,
         '$view': true,
+        '$factory': true,
       }
     },
     rules: {
