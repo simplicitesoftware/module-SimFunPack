@@ -172,4 +172,41 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
       <version>${simplicite.version}</version>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>build-others</id>
+      <activation>
+        <file>
+          <exists>others/pom.xml</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.6.3</version>
+            <executions>
+              <execution>
+                <?m2e ignore?>
+                <id>build-others-module</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>mvn</executable>
+                  <workingDirectory>${project.basedir}/others</workingDirectory>
+                  <arguments>
+                    <argument>clean</argument>
+                    <argument>package</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
