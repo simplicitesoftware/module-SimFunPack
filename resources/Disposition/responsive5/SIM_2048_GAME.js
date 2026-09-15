@@ -37,8 +37,7 @@ window.Game2048 = (function($) {
         };
 
         // Splitter mode: open the game in its own closeable work-area tab
-        const area = $view.splitter.isEnabled()
-		&& $view.splitter.request({ name: 'game2048', title: '2048', position: 'right' });
+        const area = $view.splitter.isEnabled() && $view.splitter.request({ name: 'game2048', title: '2048', position: 'right' });
         if (area) {
             $ui.contentUnload(area); // unload a previous game if the tab was already open
             const c = $('<div class="js-content-unload"/>').css('max-width', 360).on('ui.content.unload', end);
@@ -100,7 +99,7 @@ window.Game2048 = (function($) {
     }
 
     function onKeyDown(e) {
-        !freeze && play(e, KEYS[e.key]);
+        if (!freeze) play(e, KEYS[e.key]);
     }
 
     function onTouchStart(e) {
@@ -119,16 +118,16 @@ window.Game2048 = (function($) {
             dy = e.changedTouches[0].pageY - startY;
         if (Math.abs(dx) < 100 && Math.abs(dy) < 100)
             return;
-        play(e, Math.abs(dx) > Math.abs(dy)
-            ? (dx > 0 ? 'right' : 'left')
-            : (dy > 0 ? 'down' : 'up'));
+        play(e, Math.abs(dx) > Math.abs(dy) ?
+            (dx > 0 ? 'right' : 'left') :
+            (dy > 0 ? 'down' : 'up'));
     }
 
     function next(m) {
         updateBoard();
         if (m) {
             isGameWin();
-            m.score && updateScore(m.score);
+            if (m.score) updateScore(m.score);
             newNumber();
         }
         isGameOver();
@@ -281,7 +280,7 @@ window.Game2048 = (function($) {
         const [x, y] = empty[Math.floor(Math.random() * empty.length)];
         const n = Math.random() < 0.9 ? 2 : 4;
         board[x][y] = n;
-        !simu && showNumber(x, y, n);
+        if (!simu) showNumber(x, y, n);
         return true;
     }
 
@@ -301,6 +300,7 @@ window.Game2048 = (function($) {
         let score = 0;
         for (let line = 0; line < size; line++) {
             // the line's positions in travel order (0 = nearest the destination edge)
+            const s = size;
             const order = Array.from({ length: size }, (_, i) => forward ? size - 1 - i : i);
 
             // compact the tiles, then merge equal adjacent pairs (each tile merges once)

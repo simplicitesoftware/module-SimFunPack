@@ -55,8 +55,7 @@ window.GameChess = (function($) {
         }
 
         // Splitter mode: open the game in its own closeable work-area tab
-        const area = $view.splitter.isEnabled()
-        && $view.splitter.request({ name: 'simplichess', title: 'Chess', position: 'right' });
+        const area = $view.splitter.isEnabled() && $view.splitter.request({ name: 'simplichess', title: 'Chess', position: 'right' });
         if (area) {
             $ui.contentUnload(area); // unload previous one
             const c = $('<div class="js-content-unload"/>').css('max-width', 460).on('ui.content.unload', end);
@@ -116,7 +115,7 @@ window.GameChess = (function($) {
         }
 
         // Load game
-        game = new Chess();
+        game = new window.Chess();
         if (d.pgn)
             game.load_pgn(d.pgn);
         else if (d.board)
@@ -130,7 +129,7 @@ window.GameChess = (function($) {
         c = c || ctn.parent();
         ctn = display();
         c.html(ctn);
-        board = ChessBoard('chess-board', {
+        board = window.ChessBoard('chess-board', {
             draggable: true,
             position: d.board || 'start',
             orientation: p.orientation,
@@ -173,7 +172,7 @@ window.GameChess = (function($) {
         game?.clear();
         board?.destroy();
         game = board = null;
-        ews && ews.unbind('updateObject', onUpdate);
+        ews?.unbind('updateObject', onUpdate);
     }
 
     function refresh() {
@@ -204,14 +203,16 @@ window.GameChess = (function($) {
     }
 
     function hint() {
-        isPlayerTurn() && runBot();
+        if (isPlayerTurn())
+            runBot();
     }
 
     function back() {
         const moves = game.history();
         if (moves.length>0) {
             game.undo();
-            isBotTurn() && game.undo();
+            if (isBotTurn())
+                game.undo();
             refresh();
         }
     }
@@ -237,9 +238,9 @@ window.GameChess = (function($) {
 
     function isGameOver(silent) {
         let over = false;
-        !silent && msg();
+        if (!silent) msg();
         if (game.in_checkmate()) {
-            !silent && msg('Checkmate!');
+            if (!silent) msg('Checkmate!');
             over = true;
         }
         //else if (game.in_draw()) {
@@ -247,19 +248,19 @@ window.GameChess = (function($) {
         //over = true;
         //}
         else if (game.insufficient_material()) {
-            !silent && msg('Draw!', 'The game is drawn! insufficient material.');
+            if (!!silent) msg('Draw!', 'The game is drawn! insufficient material.');
             over = true;
         }
         else if (game.in_threefold_repetition()) {
-            !silent && msg('Draw!', 'The game is drawn! threefold repetition.');
+            if (!silent) msg('Draw!', 'The game is drawn! threefold repetition.');
             over = true;
         }
         else if (game.in_stalemate()) {
-            !silent && msg('Stalemate!', 'The game is stalemated! King has no possible move.');
+            if (!silent) msg('Stalemate!', 'The game is stalemated! King has no possible move.');
             over = true;
         }
         else if (game.in_check()) {
-            !silent && msg('Check!');
+            if (!silent) msg('Check!');
         }
         return over;
     }
@@ -282,7 +283,7 @@ window.GameChess = (function($) {
             reload(JSON.parse(v));
         }
         catch(e) {
-            console.error('WebSocket onUpdate error: ' + v, e);
+            $console.error('WebSocket onUpdate error: ' + v, e);
         }
     }
 
@@ -357,7 +358,8 @@ window.GameChess = (function($) {
         function syncPanel() {
             const v1 = $('[name=\'p1\']:checked',d).val(),
                 v2 = $('[name=\'p2\']:checked',d).val();
-            v2=='co' ? player2.show() : player2.hide();
+            if (v2=='co') player2.show(); 
+            else player2.hide();
             aiLevelRow.toggle(v1=='ai' || v2=='ai');
         }
         $('[name=\'p1\'],[name=\'p2\']',d).on('change', syncPanel);
@@ -367,7 +369,7 @@ window.GameChess = (function($) {
             $ui.view.widget.completion(p, 20,
                 function(cbk) {
                     app.follow(function(r) {
-                        r && cbk(r.authors);
+                        if (r) cbk(r.authors);
                     },{
                         method: 'search',
                         param: p.val()
@@ -438,17 +440,17 @@ window.GameChess = (function($) {
         $('.player .msg', ctn).hide().text('');
         if (m) {
             const c = game.turn()=='w' ? 'white' : 'black';
-            m && $('.player.'+c+' .msg', ctn).text(m).fadeIn();
+            if (m) $('.player.'+c+' .msg', ctn).text(m).fadeIn();
         }
-        a && alert(a);
+        if (a) alert(a);
     }
 
     function onDragStart(source, piece, _position, _orientation) {
         const t = game.turn();
-        if ((t=='w' && piece.search(/^b/)!==-1)
-     || (t=='b' && piece.search(/^w/)!==-1)
-     || !isPlayerTurn()
-     || isGameOver(true))
+        if ((t=='w' && piece.search(/^b/)!==-1) || 
+            (t=='b' && piece.search(/^w/)!==-1) || 
+            !isPlayerTurn() || 
+            isGameOver(true))
             return false;
     }
 
@@ -514,7 +516,7 @@ window.GameChess = (function($) {
             }
             catch (e) {
             // Never leave the board frozen with the buttons disabled, and surface the stack
-                console.error('Chess bot failed', e);
+                $console.error('Chess bot failed', e);
                 release();
             }
         }, 300);
@@ -562,13 +564,13 @@ window.GameChess = (function($) {
 
         _fallback(msg, cbk) {
             if (msg && !this._remoteDown)
-                console.error(msg + ' - switching to the local engine');
+                $console.error(msg + ' - switching to the local engine');
             this._remoteDown = true;
             try {
                 this._done(this._getBestMove());
             }
             catch (e) {
-                console.error('Local chess engine error', e);
+                $console.error('Local chess engine error', e);
             }
             finally {
                 cbk(); // always release the freeze
@@ -579,7 +581,7 @@ window.GameChess = (function($) {
             if (!bestMove)
                 return;
             if (!game.move(bestMove)) {
-                console.error('Chess bot produced an illegal move:', bestMove, 'in', game.fen());
+                $console.error('Chess bot produced an illegal move:', bestMove, 'in', game.fen());
                 return;
             }
             board.position(game.fen());
@@ -771,12 +773,18 @@ window.GameChess = (function($) {
                     if (!pc) continue;
                     if (pc.type == 'p')
                         (pc.color == 'w' ? wpawns : bpawns)[j]++;
-                    else if (pc.type == 'b') { pc.color == 'w' ? wbishop++ : bbishop++; phase += 1; }
+                    else if (pc.type == 'b') { 
+                        if (pc.color == 'w') wbishop++; else bbishop++; 
+                        phase += 1;
+                    }
                     else if (pc.type == 'n') phase += 1;
                     else if (pc.type == 'r') phase += 2;
                     else if (pc.type == 'q') phase += 4;
                     else if (pc.type == 'k') {
-                        if (pc.color == 'w') { wkFile = j; wkRow = i; }
+                        if (pc.color == 'w') { 
+                            wkFile = j;
+                            wkRow = i;
+                        }
                         else { bkFile = j; bkRow = i; }
                     }
                 }
@@ -859,9 +867,9 @@ window.GameChess = (function($) {
             if (t == 'q')
                 return 90 + ChessBot._queenEval[row][col];
             if (t == 'k')
-                return 900 + (endgame
-                    ? (w ? ChessBot._kingEndEvalWhite : ChessBot._kingEndEvalBlack)[row][col]
-                    : (w ? ChessBot._kingEvalWhite : ChessBot._kingEvalBlack)[row][col]);
+                return 900 + (endgame ? 
+                (w ? ChessBot._kingEndEvalWhite : ChessBot._kingEndEvalBlack)[row][col] : 
+                (w ? ChessBot._kingEvalWhite : ChessBot._kingEvalBlack)[row][col]);
             return 0;
         }
     }
@@ -974,7 +982,10 @@ window.GameChess = (function($) {
         destroy,
         setLevel: function(n) {
             bot.setLevel(n);
-            if (data) { data.level = bot.getLevel(); save(); }
+            if (data) { 
+                data.level = bot.getLevel(); 
+                save(); 
+            }
         },
         getLevel: function() { return bot.getLevel(); }
     };

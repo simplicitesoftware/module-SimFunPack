@@ -97,7 +97,7 @@
 
     // Web Audio retro beep effects
     const Sound = (() => {
-        function tone(freq, type, dur, vol, freq2) {
+        const tone = (freq, type, dur, vol, freq2) => {
             try {
                 const osc = AUDIO.createOscillator();
                 const g = AUDIO.createGain();
@@ -105,7 +105,7 @@
                 g.connect(AUDIO.destination);
                 osc.type = type;
                 osc.frequency.setValueAtTime(freq, AUDIO.currentTime);
-                freq2 && osc.frequency.exponentialRampToValueAtTime(freq2, AUDIO.currentTime + dur);
+                if (freq2) osc.frequency.exponentialRampToValueAtTime(freq2, AUDIO.currentTime + dur);
                 g.gain.setValueAtTime(vol, AUDIO.currentTime);
                 g.gain.exponentialRampToValueAtTime(0.001, AUDIO.currentTime + dur);
                 osc.start();
@@ -113,7 +113,7 @@
             } catch {
             // ignore
             }
-        }
+        };
         return {
             shoot:   () => { tone(1600, 'sawtooth', 0.20, 0.28, 55); tone(3200, 'square', 0.03, 0.12, 900); },
             hit:     () => tone(300, 'sawtooth', 0.08, 0.25, 150),
@@ -348,9 +348,10 @@
                     this.nextAt = frameNow + RND(15000, 25000);
                 }
                 else {
-                    pu.dead
-                        ? this.active.splice(i, 1)
-                        : pu.draw();
+                    if (pu.dead) 
+                        this.active.splice(i, 1);
+                    else 
+                        pu.draw();
                 }
             }
         }
@@ -359,9 +360,10 @@
         updateBombs(dt) {
             for (let i = this.bombs.length - 1; i >= 0; i--) {
                 this.bombs[i].update(dt);
-                this.bombs[i].dead
-                    ? this.bombs.splice(i, 1)
-                    : this.bombs[i].draw();
+                if (this.bombs[i].dead)
+                    this.bombs.splice(i, 1);
+                else 
+                    this.bombs[i].draw();
             }
         }
     }
@@ -1475,9 +1477,10 @@
                         }
                     }
                 }
-                laserHit || laser.dead
-                    ? lasers.splice(i, 1)
-                    : laser.draw();
+                if (laserHit || laser.dead)
+                    lasers.splice(i, 1);
+                else
+                    laser.draw();
             }
         }
     }
@@ -1942,9 +1945,10 @@
                     alienLasers.splice(i, 1);
                 }
                 else {
-                    al.dead
-                        ? alienLasers.splice(i, 1)
-                        : al.draw();
+                    if (al.dead)
+                        alienLasers.splice(i, 1);
+                    else
+                        al.draw();
                 }
             }
         }
@@ -2750,11 +2754,11 @@
                         }
                     }
                     else {
-                        const angles = powerups.quadUntil > now
-                            ? [ship.angle, ship.angle + Math.PI / 2, ship.angle + Math.PI, ship.angle - Math.PI / 2]
-                            : (powerups.tripleUntil > now
-                                ? [ship.angle - 0.22, ship.angle, ship.angle + 0.22]
-                                : [ship.angle]);
+                        const angles = powerups.quadUntil > now ? 
+                            [ship.angle, ship.angle + Math.PI / 2, ship.angle + Math.PI, ship.angle - Math.PI / 2] : 
+                            (powerups.tripleUntil > now ?
+                                [ship.angle - 0.22, ship.angle, ship.angle + 0.22] :
+                                [ship.angle]);
                         angles.forEach(a => lasers.push(new Laser(
                             ship.x + r * Math.cos(a),
                             ship.y + r * Math.sin(a), a)));
@@ -2814,9 +2818,10 @@
                 const al = aliens[i];
                 if (!al) continue;
                 al.update(alienDt);
-                al.dead
-                    ? aliens.splice(i, 1)
-                    : al.draw();
+                if (al.dead)
+                    aliens.splice(i, 1);
+                else
+                    al.draw();
             }
         }
 
@@ -2893,9 +2898,10 @@
                     healthPacks.splice(i, 1);
                 }
                 else {
-                    pack.dead
-                        ? healthPacks.splice(i, 1)
-                        : pack.draw();
+                    if (pack.dead)
+                        healthPacks.splice(i, 1);
+                    else
+                        pack.draw();
                 }
             }
         }
@@ -2904,15 +2910,17 @@
         updateEffects(dt) {
             for (let i = explosions.length - 1; i >= 0; i--) {
                 explosions[i].update(dt);
-                explosions[i].dead
-                    ? explosions.splice(i, 1)
-                    : explosions[i].draw();
+                if (explosions[i].dead)
+                    explosions.splice(i, 1);
+                else
+                    explosions[i].draw();
             }
             for (let i = shockwaves.length - 1; i >= 0; i--) {
                 shockwaves[i].update(dt);
-                shockwaves[i].dead
-                    ? shockwaves.splice(i, 1)
-                    : shockwaves[i].draw();
+                if (shockwaves[i].dead)
+                    shockwaves.splice(i, 1);
+                else
+                    shockwaves[i].draw();
             }
         }
 
@@ -3044,9 +3052,9 @@
             const cElapsed = frameNow - countdownAt;
             const cText    = countdown > 0 ? `${countdown}` : MSG.GO;
             const cPhase   = cElapsed % 900;
-            const cAlpha   = countdown > 0
-                ? (cPhase < 200 ? cPhase / 200 : cPhase > 700 ? 1 - (cPhase - 700) / 200 : 1)
-                : Math.max(0, 1 - (cElapsed - 2700) / 400);
+            const cAlpha   = countdown > 0 ?
+                (cPhase < 200 ? cPhase / 200 : cPhase > 700 ? 1 - (cPhase - 700) / 200 : 1) :
+                Math.max(0, 1 - (cElapsed - 2700) / 400);
             ctx.save();
             ctx.globalAlpha = Math.max(0, Math.min(1, cAlpha));
             ctx.font = `bold ${Math.round(72 * dpr)}px monospace`;
@@ -3121,7 +3129,7 @@
                 return;
             if (frame % 10 === 0) {
                 const victims = [...aliens, ...borderAliens];
-                boss && victims.push(boss);
+                if (boss) victims.push(boss);
                 if (victims.length > 0) {
                     const v  = victims[Math.floor(RND() * victims.length)];
                     explosions.push(new Explosion(v.x, v.y));
