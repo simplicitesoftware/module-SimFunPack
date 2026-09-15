@@ -248,7 +248,7 @@ window.GameChess = (function($) {
         //over = true;
         //}
         else if (game.insufficient_material()) {
-            if (!!silent) msg('Draw!', 'The game is drawn! insufficient material.');
+            if (!silent) msg('Draw!', 'The game is drawn! insufficient material.');
             over = true;
         }
         else if (game.in_threefold_repetition()) {
@@ -358,8 +358,10 @@ window.GameChess = (function($) {
         function syncPanel() {
             const v1 = $('[name=\'p1\']:checked',d).val(),
                 v2 = $('[name=\'p2\']:checked',d).val();
-            if (v2=='co') player2.show(); 
-            else player2.hide();
+            if (v2=='co')
+                player2.show();
+            else
+                player2.hide();
             aiLevelRow.toggle(v1=='ai' || v2=='ai');
         }
         $('[name=\'p1\'],[name=\'p2\']',d).on('change', syncPanel);
@@ -447,10 +449,10 @@ window.GameChess = (function($) {
 
     function onDragStart(source, piece, _position, _orientation) {
         const t = game.turn();
-        if ((t=='w' && piece.search(/^b/)!==-1) || 
-            (t=='b' && piece.search(/^w/)!==-1) || 
-            !isPlayerTurn() || 
-            isGameOver(true))
+        if ((t=='w' && piece.search(/^b/)!==-1) ||
+        (t=='b' && piece.search(/^w/)!==-1) ||
+        !isPlayerTurn() ||
+        isGameOver(true))
             return false;
     }
 
@@ -773,19 +775,28 @@ window.GameChess = (function($) {
                     if (!pc) continue;
                     if (pc.type == 'p')
                         (pc.color == 'w' ? wpawns : bpawns)[j]++;
-                    else if (pc.type == 'b') { 
-                        if (pc.color == 'w') wbishop++; else bbishop++; 
+                    else if (pc.type == 'b') {
+                        if (pc.color == 'w')
+                            wbishop++;
+                        else
+                            bbishop++;
                         phase += 1;
                     }
-                    else if (pc.type == 'n') phase += 1;
-                    else if (pc.type == 'r') phase += 2;
-                    else if (pc.type == 'q') phase += 4;
+                    else if (pc.type == 'n')
+                        phase += 1;
+                    else if (pc.type == 'r')
+                        phase += 2;
+                    else if (pc.type == 'q')
+                        phase += 4;
                     else if (pc.type == 'k') {
-                        if (pc.color == 'w') { 
+                        if (pc.color == 'w') {
                             wkFile = j;
                             wkRow = i;
                         }
-                        else { bkFile = j; bkRow = i; }
+                        else {
+                            bkFile = j;
+                            bkRow = i;
+                        }
                     }
                 }
             const endgame = phase <= 6;
@@ -867,9 +878,9 @@ window.GameChess = (function($) {
             if (t == 'q')
                 return 90 + ChessBot._queenEval[row][col];
             if (t == 'k')
-                return 900 + (endgame ? 
-                (w ? ChessBot._kingEndEvalWhite : ChessBot._kingEndEvalBlack)[row][col] : 
-                (w ? ChessBot._kingEvalWhite : ChessBot._kingEvalBlack)[row][col]);
+                return 900 + (endgame ?
+                    (w ? ChessBot._kingEndEvalWhite : ChessBot._kingEndEvalBlack)[row][col] :
+                    (w ? ChessBot._kingEvalWhite : ChessBot._kingEvalBlack)[row][col]);
             return 0;
         }
     }
@@ -982,9 +993,9 @@ window.GameChess = (function($) {
         destroy,
         setLevel: function(n) {
             bot.setLevel(n);
-            if (data) { 
-                data.level = bot.getLevel(); 
-                save(); 
+            if (data) {
+                data.level = bot.getLevel();
+                save();
             }
         },
         getLevel: function() { return bot.getLevel(); }

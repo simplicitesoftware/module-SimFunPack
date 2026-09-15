@@ -300,7 +300,6 @@ window.Game2048 = (function($) {
         let score = 0;
         for (let line = 0; line < size; line++) {
             // the line's positions in travel order (0 = nearest the destination edge)
-            const s = size;
             const order = Array.from({ length: size }, (_, i) => forward ? size - 1 - i : i);
 
             // compact the tiles, then merge equal adjacent pairs (each tile merges once)

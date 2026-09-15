@@ -348,9 +348,9 @@
                     this.nextAt = frameNow + RND(15000, 25000);
                 }
                 else {
-                    if (pu.dead) 
+                    if (pu.dead)
                         this.active.splice(i, 1);
-                    else 
+                    else
                         pu.draw();
                 }
             }
@@ -362,7 +362,7 @@
                 this.bombs[i].update(dt);
                 if (this.bombs[i].dead)
                     this.bombs.splice(i, 1);
-                else 
+                else
                     this.bombs[i].draw();
             }
         }
@@ -2754,8 +2754,8 @@
                         }
                     }
                     else {
-                        const angles = powerups.quadUntil > now ? 
-                            [ship.angle, ship.angle + Math.PI / 2, ship.angle + Math.PI, ship.angle - Math.PI / 2] : 
+                        const angles = powerups.quadUntil > now ?
+                            [ship.angle, ship.angle + Math.PI / 2, ship.angle + Math.PI, ship.angle - Math.PI / 2] :
                             (powerups.tripleUntil > now ?
                                 [ship.angle - 0.22, ship.angle, ship.angle + 0.22] :
                                 [ship.angle]);
